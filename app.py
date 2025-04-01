@@ -57,7 +57,7 @@ def query():
             return jsonify({"error": stockfish_data.get("data", "Unknown error")}), 400
     else:
         return jsonify({"error": "Stockfish API request failed."}), 500
-    
+
 def get_gemini_explanation(fen, best_move):
     """Send the FEN and best move to Gemini for explanation."""
     try:
@@ -69,7 +69,8 @@ def get_gemini_explanation(fen, best_move):
         print(f"Gemini API error: {e}")
         return "Error fetching explanation."
 
-def get_openai_explanation(fen, modelversion, player, best_move):
+@app.route("/gethint", methods=["POST"])
+def gethint(fen, modelversion, player, best_move):
     """Send the FEN and best move to OpenAI for explanation."""
     try:
         response = openaiclient.responses.create(
