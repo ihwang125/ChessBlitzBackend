@@ -4,6 +4,18 @@ import requests
 import google.generativeai as genai
 from openai import OpenAI
 import os
+import pyrebase
+
+config = {
+  "apiKey": os.getenv("FIREBASE_API_KEY"),
+  "authDomain": "chessblitz-21d26.firebaseapp.com",
+  "databaseURL": "https://chessblitz-21d26-default-rtdb.firebaseio.com/",
+  "storageBucket": "chessblitz-21d26.firebasestorage.app"
+}
+
+firebase = pyrebase.initialize_app(config)
+
+db = firebase.database()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
