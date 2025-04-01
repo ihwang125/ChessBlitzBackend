@@ -19,11 +19,10 @@ CORS(app)  # Allow all domains for now (development only)
 # Stockfish API endpoint
 STOCKFISH_API_URL = "https://stockfish.online/api/s/v2.php"
 
-@app.route("/query", methods=["POST"])
+@app.route("/bestmove", methods=["POST"])
 def query():
     data = request.json
     fen = data.get("fen")
-    player = "black" if data.get("player") else "white"
 
     if not fen:
         return jsonify({"error": "FEN notation missing"}), 400
@@ -38,11 +37,9 @@ def query():
             best_move_raw = stockfish_data.get("bestmove", "Unknown")
             best_move = best_move_raw.split()[1] if len(best_move_raw.split()) > 1 else "Unknown"
             eval_score = stockfish_data.get("evaluation", "N/A")
-            explanation = get_openai_explanation(fen, "gpt-4-turbo", player, best_move)
             return jsonify({
                 "best_move": best_move,
-                "evaluation": eval_score,
-                "explanation": explanation
+                "evaluation": eval_score
             })
         else:
             return jsonify({"error": stockfish_data.get("data", "Unknown error")}), 400
