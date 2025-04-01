@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS  # To handle cross-origin requests
 import requests
-import google.generativeai as genai
 from openai import OpenAI
 import os
 import pyrebase
@@ -57,17 +56,6 @@ def query():
             return jsonify({"error": stockfish_data.get("data", "Unknown error")}), 400
     else:
         return jsonify({"error": "Stockfish API request failed."}), 500
-
-def get_gemini_explanation(fen, best_move):
-    """Send the FEN and best move to Gemini for explanation."""
-    try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(f"As a chess tutor, explain why {best_move} is the best move in this position: {fen} as briefly as possible", generation_config={"max_output_tokens": 200})
-
-        return response.text if response else "No explanation available."
-    except Exception as e:
-        print(f"Gemini API error: {e}")
-        return "Error fetching explanation."
 
 @app.route("/gethint", methods=["POST"])
 def gethint(fen, modelversion, player, best_move):
