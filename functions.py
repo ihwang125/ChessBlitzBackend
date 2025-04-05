@@ -31,19 +31,17 @@ def validate_puzzle_id(db: Database, puzzle_id: str) -> Tuple[bool, str]:
     if puzzle_id not in puzzle_ids:
         return False, "Puzzle ID does not exist in the Database"
 
-    return True
+    return True, ""
 
 def validate_puzzle_move(moves: List[str], move_number: int) -> Tuple[bool, str]:
     """Validates if the move_number is valid for the specified puzzle"""
-    assert type(moves) == List[str]
-
     if type(move_number) != int:
         return False, "Invalid Move Number, not of type int"
     if move_number-1 < 0:
         return False, "Invalid Move Number, must be greater than or equal to 0"
-    if move_number-1 > len(moves):
+    if move_number-1 >= len(moves):
         return False, "Invalid Move Number, must be less than length of puzzle"
-    return True
+    return True, ""
 
 def validate_puzzle(puzzle: Dict[str, Any]) -> bool:
     """Validates if a puzzle is a valid puzzle"""

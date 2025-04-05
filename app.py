@@ -41,12 +41,12 @@ def get_random_puzzle() -> Tuple[Dict[str, Any], int]:
     except:
         return jsonify({"error": "Server function error"}), 500
 
-@app.route("/puzzles/{puzzle_id}/best-moves/{move_number}", methods=["GET"])
+@app.route("/puzzles/<puzzle_id>/best-moves/<int:move_number>", methods=["GET"])
 def get_best_move(puzzle_id: int, move_number: int) -> Tuple[Dict[str, Any], int]:
     """Gets best move based on the puzzle_id and current move_number"""
     try:
         # User Input Error Handling
-        condpuzzle, errpuzzle = validate_puzzle_id(puzzle_id)
+        condpuzzle, errpuzzle = validate_puzzle_id(db, puzzle_id)
         if not condpuzzle:
             return jsonify({"error": errpuzzle}), 400
 
@@ -62,12 +62,12 @@ def get_best_move(puzzle_id: int, move_number: int) -> Tuple[Dict[str, Any], int
     except:
         return jsonify({"error": "Server function error"}), 500
 
-@app.route("/puzzles/{puzzle_id}/hints/{move_number}", methods=["GET"])
+@app.route("/puzzles/<puzzle_id>/hints/<int:move_number>", methods=["GET"])
 def gethint(puzzle_id: int, move_number: int, modelversion: str = "gpt-4-turbo") -> Tuple[Dict[str, Any], int]:
     """Send the puzzle_id and move_number to OpenAI for explanation."""
     try:
         # User Input Error Handling
-        condpuzzle, errpuzzle = validate_puzzle_id(puzzle_id)
+        condpuzzle, errpuzzle = validate_puzzle_id(db, puzzle_id)
         if not condpuzzle:
             return jsonify({"error": errpuzzle}), 400
 
@@ -87,7 +87,7 @@ def gethint(puzzle_id: int, move_number: int, modelversion: str = "gpt-4-turbo")
         response = openaiclient.responses.create(
             model=modelversion,
             instructions="You are a chess tutor, and you know how to play chess. You are tutoring a student, and you don't want to provide the best move explicitly, but guide the student towards their own discovery of the move.",
-            input=f"In the position: {fen} ; the move is for {player}, and the best move is: {best_move}. Please provide a hint to the student that is not obvious and is not too informative or easy, but reasonable enough."
+            input=f"In the position: {fen} ; the move is for {player}, and the best move is: {move}. Please provide a hint to the student that is not obvious and is not too informative or easy, but reasonable enough."
         )
         response = response.output_text if response else "No explanation available."
 
