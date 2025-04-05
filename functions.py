@@ -16,7 +16,7 @@ def fetch_random_puzzle(db: Database) -> Dict[str, Any]:
     return fetch_puzzle(db, random_puzzle_id)
 
 def fetch_puzzle_ids(db: Database) -> List[str]:
-    return list(db.child("puzzles").shallow().get())
+    return list(db.child("puzzles").shallow().get().val())
 
 def validate_puzzle_id(db: Database, puzzle_id: str) -> Tuple[bool, str]:
     """Validates if the input arguments from the frontend are valid parameters for a puzzle in the database"""
