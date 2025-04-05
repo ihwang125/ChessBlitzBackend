@@ -49,3 +49,4 @@ def validate_puzzle(puzzle: Dict[str, Any]) -> bool:
     """Validates if a puzzle is a valid puzzle"""
     if puzzle is None:
         return False
+    return True

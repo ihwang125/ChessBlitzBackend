@@ -35,7 +35,7 @@ def get_random_puzzle() -> Tuple[Dict[str, Any], int]:
     """Returns random puzzle from Firebase realtime database of puzzles"""
     try:
         puzzle = fetch_random_puzzle(db)
-        if not validate_puzzle(puzzle):
+        if validate_puzzle(puzzle):
             return jsonify(puzzle), 200
         return jsonify({"error": "Puzzle does not exist"}), 404
     except:
