@@ -89,6 +89,8 @@ def gethint(puzzle_id: int, move_number: int, modelversion: str = "gpt-4-turbo")
         # OpenAI API Call
         response = openaiclient.responses.create(
             model=modelversion,
+            temperature=0.7,
+            max_output_tokens=300,
             instructions="You are a chess tutor, and you know how to play chess. You are tutoring a student, and you don't want to provide the best move explicitly, but guide the student towards their own discovery of the move.",
             input=f"In the position: {fen} ; the move is for {player}, and the best move is: {move}. Please provide a hint to the student that is not obvious and is not too informative or easy, but reasonable enough."
         )
