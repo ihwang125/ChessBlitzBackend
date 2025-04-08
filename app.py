@@ -6,12 +6,15 @@ from typing import Dict, Any, Tuple
 from openai import OpenAI
 import os
 import pyrebase
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Firebase Config Dev Only
 config = {
   "apiKey": os.getenv("FIREBASE_API_KEY"),
   "authDomain": "chessblitz-21d26.firebaseapp.com",
-  "databaseURL": "https://chessblitz-21d26-default-rtdb.firebaseio.com/",
+  "databaseURL": os.getenv("DATABASE_URL"),
   "storageBucket": "chessblitz-21d26.firebasestorage.app"
 }
 
