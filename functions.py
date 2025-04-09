@@ -13,7 +13,9 @@ def fetch_random_puzzle(db: Database) -> Dict[str, Any]:
     puzzle_ids = fetch_puzzle_ids(db)
     random_puzzle_id = random.choice(puzzle_ids)
 
-    return fetch_puzzle(db, random_puzzle_id)
+    result = fetch_puzzle(db, random_puzzle_id)
+    result['ID'] = random_puzzle_id
+    return result
 
 def fetch_puzzle_ids(db: Database) -> List[str]:
     return list(db.child("puzzles").shallow().get().val())
