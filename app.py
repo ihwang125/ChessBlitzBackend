@@ -21,6 +21,7 @@ config = {
 firebase = pyrebase.initialize_app(config)
 
 db = firebase.database()
+auth = firebase.auth()
 
 # OpenAI API Config
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -99,6 +100,40 @@ def gethint(puzzle_id: int, move_number: int, modelversion: str = "gpt-4-turbo")
         return jsonify({"hint": response}), 200
     except:
         return jsonify({"error": "Error fetching explanation."}), 500
+    
+@app.route('/sign_up', methods=['POST'])
+def sign_up_route():
+    email = request.json.get('email')
+    password = request.json.get('password')
+    # Validate email and password
+    cond_email, err_email = validate_email(email)
+    cond_password, err_password = validate_password(password)
+    if not cond_email:
+        return jsonify({"error": err_email}), 400
+    if not cond_password:
+        return jsonify({"error": err_password}), 400
+    user = sign_up(auth, email, password)
+    if user:
+        return jsonify({"message": "User created successfully!"}), 201
+    else:
+        return jsonify({"message": "Error creating user!"}), 400
+
+@app.route('/sign_in', methods=['POST'])
+def sign_in_route():
+    email = request.json.get('email')
+    password = request.json.get('password')
+    # Validate email and password
+    cond_email, err_email = validate_email(email)
+    cond_password, err_password = validate_password(password)
+    if not cond_email:
+        return jsonify({"error": err_email}), 400
+    if not cond_password:
+        return jsonify({"error": err_password}), 400
+    user = sign_in(auth, email, password)
+    if user:
+        return jsonify({"message": "Signed in successfully!", "user": user}), 200
+    else:
+        return jsonify({"message": "Invalid credentials!"}), 400
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,8 +1,8 @@
 import pyrebase
-from pyrebase.pyrebase import Database
+from pyrebase.pyrebase import Database, Auth
 import random
 from typing import Dict, Any, Tuple, List
-
+import re
 
 def fetch_puzzle(db: Database, puzzle_id: str) -> Dict[str, Any]:
     """Fetches puzzle id from Firebase Database with specified puzzle_id"""
@@ -48,3 +48,41 @@ def validate_puzzle(puzzle: Dict[str, Any]) -> bool:
     if puzzle is None:
         return False
     return True
+
+def validate_email(email: str) -> Tuple[bool, str]:
+    """Validates if the email is in the correct format"""
+    if type(email) != str:
+        return False, "Email must be of type string"
+    if len(email) < 5 or "@" not in email:
+        return False, "Malformed Email input"
+    return True, ""
+
+def validate_password(password: str) -> Tuple[bool, str]:
+    """Validates if the password is in the correct format"""
+    if type(password) != str:
+        return False, "Password must be of type string"
+    if len(password) < 6:
+        return False, "Password must be at least 6 characters long"
+    if not re.search(r"\d+", password):
+        return False, "Password must contain at least one digit"
+    return True, ""
+
+# Sign in function
+def sign_in(auth, email, password):
+    try:
+        user = auth.sign_in_with_email_and_password(email, password)
+        print(f"Signed in successfully: {user}")
+        return user
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+    
+# Sign-up function
+def sign_up(auth, email, password):
+    try:
+        user = auth.create_user_with_email_and_password(email, password)
+        print(f"User created successfully: {user}")
+        return user
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
