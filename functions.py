@@ -88,3 +88,47 @@ def sign_up(auth, email, password):
     except Exception as e:
         print(f"Error: {e}")
         return None
+    
+def get_fen(fen: str, moves: list, move: int) -> str:
+   """_summary_
+
+
+   Args:
+       fen (str): current fen
+       moves (list): a list of moves to apply to the fen
+       move (int): the number of moves into the puzzle
+
+
+   Returns:
+       str: the fen after the moves have been applied
+   """
+   temp_fen = fen
+   for i in range(0, move):
+       current_move = moves[i]
+       temp_fen = update_fen(temp_fen, current_move)
+   return temp_fen
+
+
+def update_fen(fen: str, move: str) -> str:
+   """
+   Update a FEN string with a given move in UCI format.
+
+
+   Parameters:
+   - fen (str): The FEN string of the current board position.
+   - move (str): The move in UCI format (e.g., "e2e4", "e7e8q").
+
+
+   Returns:
+   - str: The updated FEN string after the move.
+   """
+   board = chess.Board(fen)
+   uci_move = chess.Move.from_uci(move)
+
+
+   if uci_move not in board.legal_moves:
+       raise ValueError(f"Illegal move: {move}")
+
+
+   board.push(uci_move)
+   return board.fen()
