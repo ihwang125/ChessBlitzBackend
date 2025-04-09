@@ -13,9 +13,9 @@ load_dotenv()
 # Firebase Config Dev Only
 config = {
   "apiKey": os.getenv("FIREBASE_API_KEY"),
-  "authDomain": "chessblitz-21d26.firebaseapp.com",
+  "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
   "databaseURL": os.getenv("DATABASE_URL"),
-  "storageBucket": "chessblitz-21d26.firebasestorage.app"
+  "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET")
 }
 
 firebase = pyrebase.initialize_app(config)
