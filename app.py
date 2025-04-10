@@ -95,7 +95,7 @@ def gethint(puzzle_id: int, move_number: int, modelversion: str = "gpt-4-turbo")
             instructions="You are a chess tutor, and you know how to play chess. You are tutoring a student, and you don't want to provide the best move explicitly, but guide the student towards their own discovery of the move. Please be as brief within two lines.",
             input=f"In the position: {fen} ; the move is for {player}, and the best move is: {move}. Please provide a hint to the student that is not obvious and is not too informative or easy, but reasonable enough."
         )
-        response = f"In the position: {fen} ; the move is for {player}, and the best move is: {move}. \n" + response.output_text if response else "No explanation available."
+        response = response.output_text if response else "No explanation available."
 
         return jsonify({"hint": response}), 200
     except:
