@@ -3,6 +3,7 @@ from pyrebase.pyrebase import Database, Auth
 import random
 from typing import Dict, Any, Tuple, List
 import re
+import chess
 
 def fetch_puzzle(db: Database, puzzle_id: str) -> Dict[str, Any]:
     """Fetches puzzle id from Firebase Database with specified puzzle_id"""
@@ -70,34 +71,33 @@ def validate_password(password: str) -> Tuple[bool, str]:
     return True, ""
 
 # Sign in function
-def sign_in(auth, email, password):
+def sign_in(auth: Auth, email: str, password: str) -> Tuple[Dict[str, Any], str]:
     try:
         user = auth.sign_in_with_email_and_password(email, password)
-        print(f"Signed in successfully: {user}")
-        return user
+        message = f"Signed in successfully: {user}"
+        return user, message
     except Exception as e:
-        print(f"Error: {e}")
-        return None
+        message = f"Error: {e}"
+        return None, message
     
 # Sign-up function
-def sign_up(auth, email, password):
+def sign_up(auth: Auth, email: str, password: str) -> Tuple[Dict[str, Any], str]:
     try:
         user = auth.create_user_with_email_and_password(email, password)
-        print(f"User created successfully: {user}")
-        return user
+        message = f"User created successfully: {user}"
+        return user, message
     except Exception as e:
-        print(f"Error: {e}")
-        return None
+        message = f"Error: {e}"
+        return None, message
     
 def get_fen(fen: str, moves: list, move: int) -> str:
-   """_summary_
+   """
+   Returns the fen after move number of specified moves from the moves list applied to the original fen
 
-
-   Args:
-       fen (str): current fen
-       moves (list): a list of moves to apply to the fen
-       move (int): the number of moves into the puzzle
-
+   Parameters:
+   - fen (str): current fen
+   - moves (list): a list of moves to apply to the fen
+   - move (int): the number of moves into the puzzle
 
    Returns:
        str: the fen after the moves have been applied
@@ -126,9 +126,23 @@ def update_fen(fen: str, move: str) -> str:
    uci_move = chess.Move.from_uci(move)
 
 
-   if uci_move not in board.legal_moves:
-       raise ValueError(f"Illegal move: {move}")
+   #if uci_move not in board.legal_moves:
+   #    raise ValueError(f"Illegal move: {move}")
 
 
    board.push(uci_move)
    return board.fen()
+
+def get_current_player(fen: str) -> str:
+    """ 
+    Gets the current player of a game defined by an input fen string
+
+    Parameters:
+    - fen (str): current fen
+
+    Returns:
+    - str: The current player
+    """
+    board = chess.Board(fen)
+
+    return "white" if board.turn else "black"

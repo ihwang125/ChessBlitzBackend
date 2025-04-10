@@ -84,8 +84,8 @@ def gethint(puzzle_id: int, move_number: int, modelversion: str = "gpt-4-turbo")
 
         # OpenAI API Call Formation
         move = moves[move_number-1]
-        fen = puzzle["FEN"]
-        player = "unkown" # STILL IN DEVELOPMENT, NEED TO FIGURE OUT WAY TO IDENTIFY CURRENT PLAYER
+        fen = get_fen(puzzle["FEN"], moves, move_number-1)
+        player = get_current_player(fen)
 
         # OpenAI API Call
         response = openaiclient.responses.create(
@@ -95,14 +95,14 @@ def gethint(puzzle_id: int, move_number: int, modelversion: str = "gpt-4-turbo")
             instructions="You are a chess tutor, and you know how to play chess. You are tutoring a student, and you don't want to provide the best move explicitly, but guide the student towards their own discovery of the move. Please be as brief within two lines.",
             input=f"In the position: {fen} ; the move is for {player}, and the best move is: {move}. Please provide a hint to the student that is not obvious and is not too informative or easy, but reasonable enough."
         )
-        response = response.output_text if response else "No explanation available."
+        response = f"In the position: {fen} ; the move is for {player}, and the best move is: {move}. \n" + response.output_text if response else "No explanation available."
 
         return jsonify({"hint": response}), 200
     except:
         return jsonify({"error": "Error fetching explanation."}), 500
     
 @app.route('/sign_up', methods=['POST'])
-def sign_up_route():
+def sign_up_route() -> Tuple[Dict[str, Any], int]:
     email = request.json.get('email')
     password = request.json.get('password')
     # Validate email and password
@@ -112,14 +112,14 @@ def sign_up_route():
         return jsonify({"error": err_email}), 400
     if not cond_password:
         return jsonify({"error": err_password}), 400
-    user = sign_up(auth, email, password)
+    user, message = sign_up(auth, email, password)
     if user:
-        return jsonify({"message": "User created successfully!"}), 201
+        return jsonify({"message": message, "user": user}), 201
     else:
-        return jsonify({"message": "Error creating user!"}), 400
+        return jsonify({"message": message}), 400
 
 @app.route('/sign_in', methods=['POST'])
-def sign_in_route():
+def sign_in_route() -> Tuple[Dict[str, Any], int]:
     email = request.json.get('email')
     password = request.json.get('password')
     # Validate email and password
@@ -129,11 +129,11 @@ def sign_in_route():
         return jsonify({"error": err_email}), 400
     if not cond_password:
         return jsonify({"error": err_password}), 400
-    user = sign_in(auth, email, password)
+    user, message = sign_in(auth, email, password)
     if user:
-        return jsonify({"message": "Signed in successfully!", "user": user}), 200
+        return jsonify({"message": message, "user": user}), 200
     else:
         return jsonify({"message": "Invalid credentials!"}), 400
 
 if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=os.getenv("PORT"))
