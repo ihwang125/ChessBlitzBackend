@@ -151,15 +151,30 @@ def get_current_player(fen: str) -> str:
 
 def get_principal_variation(fen: str) -> list:
     """returns a list of best moves"""
-    with chess.engine.SimpleEngine.popen_uci(engine_path) as engine:
-        # Get evaluation info from the engine
-        info = engine.analyse(board, chess.engine.Limit(time=0.1))
-        return info["pv"]
+    board = chess.Board(fen)
+    try:
+        with chess.engine.SimpleEngine.popen_uci(ENGINE_PATH) as engine:
+            info = engine.analyse(board, chess.engine.Limit(time=0.1))
+            return info["pv"]
+    except Exception as e:
+        return [f"Engine error: {e}"]
     
     
 def get_score(fen: str) -> str:
     """returns a score object"""
-    with chess.engine.SimpleEngine.popen_uci(engine_path) as engine:
-        # Get evaluation info from the engine
-        info = engine.analyse(board, chess.engine.Limit(time=0.1))
-        return info["score"]
+    board = chess.Board(fen)
+    try:
+        with chess.engine.SimpleEngine.popen_uci(ENGINE_PATH) as engine:
+            info = engine.analyse(board, chess.engine.Limit(time=0.1))
+            return info["score"]
+    except Exception as e:
+        return f"Engine error: {e}"
+
+def get_info(fen: str) -> dict:
+    """gets all the board info"""
+    board = chess.Board(fen)
+    try:
+        with chess.engine.SimpleEngine.popen_uci(ENGINE_PATH) as engine:
+            return engine.analyse(board, chess.engine.Limit(time=0.1))
+    except Exception as e:
+        return {"error": f"Engine error: {e}"}
