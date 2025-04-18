@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Firebase Config Dev Only
-config = {
+config = { 
   "apiKey": os.getenv("FIREBASE_API_KEY"),
   "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
   "databaseURL": os.getenv("DATABASE_URL"),
@@ -136,4 +136,4 @@ def sign_in_route() -> Tuple[Dict[str, Any], int]:
         return jsonify({"message": "Invalid credentials!"}), 400
 
 if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0', port=os.getenv("PORT"))
+    app.run(debug=True)
