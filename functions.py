@@ -2,6 +2,7 @@ import pyrebase
 from pyrebase.pyrebase import Database, Auth
 import random
 from typing import Dict, Any, Tuple, List
+import time
 import re
 import chess
 from flask import jsonify
@@ -101,9 +102,10 @@ def sign_up_page(db: Database, userid: str, name: str, username: str, country: s
         }
         db.child("users").child(userid).set(user_data)
 
-        user_record = db.child("users").child(username).get().val()
+        time.sleep(5)
+        user_record = db.child("users").child(userid).get().val()
         if user_record:
-            message = f"User created successfully: {username}"
+            message = f"User created successfully: {user_record['username']}"
             return jsonify({"message": message, "user": user_record}), 201
         else:
             return jsonify({"message": "User creation failed"}), 400

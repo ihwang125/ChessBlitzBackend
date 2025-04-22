@@ -160,6 +160,20 @@ def sign_in_route() -> Tuple[Dict[str, Any], int]:
    else:
        return jsonify({"message": "Invalid credentials!"}), 400
 
+@app.route('/add_profile_info', methods=['POST'])
+def add_profile_info_route():
+    userUID = request.json.get('userUID')
+    name = request.json.get('name')
+    username = request.json.get('username')
+    country = request.json.get('country')
+
+    # Check names
+    # Validate username in database
+    # Validate country
+
+    response = sign_up_page(db, userUID, name, username, country)
+    return response
+
 
 @app.route("/query", methods=["POST"])
 def query():
