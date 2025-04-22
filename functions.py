@@ -4,6 +4,7 @@ import random
 from typing import Dict, Any, Tuple, List
 import re
 import chess
+from flask import jsonify
 
 def fetch_puzzle(db: Database, puzzle_id: str) -> Dict[str, Any]:
     """Fetches puzzle id from Firebase Database with specified puzzle_id"""
@@ -90,6 +91,25 @@ def sign_up(auth: Auth, email: str, password: str) -> Tuple[Dict[str, Any], str]
         message = f"Error: {e}"
         return None, message
     
+def sign_up_page(db: Database, userid: str, name: str, username: str, country: str) -> Tuple[Dict[str, Any], int]:
+    try:
+        user_data = {
+            "name": name,
+            "username": username,
+            "country": country,
+            "friends": []
+        }
+        db.child("users").child(userid).set(user_data)
+
+        user_record = db.child("users").child(username).get().val()
+        if user_record:
+            message = f"User created successfully: {username}"
+            return jsonify({"message": message, "user": user_record}), 201
+        else:
+            return jsonify({"message": "User creation failed"}), 400
+    except Exception as e:
+        return jsonify({"error": f"Error signing up: {e}"}), 500
+
 def get_fen(fen: str, moves: list, move: int) -> str:
    """
    Returns the fen after move number of specified moves from the moves list applied to the original fen
