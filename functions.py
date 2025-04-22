@@ -5,7 +5,7 @@ from typing import Dict, Any, Tuple, List
 import time
 import re
 import chess
-from flask import jsonify
+import chess.engine
 
 def fetch_puzzle(db: Database, puzzle_id: str) -> Dict[str, Any]:
     """Fetches puzzle id from Firebase Database with specified puzzle_id"""
@@ -21,6 +21,7 @@ def fetch_random_puzzle(db: Database) -> Dict[str, Any]:
     return result
 
 def fetch_puzzle_ids(db: Database) -> List[str]:
+    """fetches a list of puzzle ids"""
     return list(db.child("puzzles").shallow().get().val())
 
 def validate_puzzle_id(db: Database, puzzle_id: str) -> Tuple[bool, str]:
@@ -168,3 +169,33 @@ def get_current_player(fen: str) -> str:
     board = chess.Board(fen)
 
     return "white" if board.turn else "black"
+
+def get_principal_variation(fen: str) -> list:
+    """returns a list of best moves"""
+    board = chess.Board(fen)
+    try:
+        with chess.engine.SimpleEngine.popen_uci(ENGINE_PATH) as engine:
+            info = engine.analyse(board, chess.engine.Limit(time=0.1))
+            return info["pv"]
+    except Exception as e:
+        return [f"Engine error: {e}"]
+    
+    
+def get_score(fen: str) -> str:
+    """returns a score object"""
+    board = chess.Board(fen)
+    try:
+        with chess.engine.SimpleEngine.popen_uci(ENGINE_PATH) as engine:
+            info = engine.analyse(board, chess.engine.Limit(time=0.1))
+            return info["score"]
+    except Exception as e:
+        return f"Engine error: {e}"
+
+def get_info(fen: str) -> dict:
+    """gets all the board info"""
+    board = chess.Board(fen)
+    try:
+        with chess.engine.SimpleEngine.popen_uci(ENGINE_PATH) as engine:
+            return engine.analyse(board, chess.engine.Limit(time=0.1))
+    except Exception as e:
+        return {"error": f"Engine error: {e}"}

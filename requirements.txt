@@ -6,3 +6,4 @@ openai
 setuptools
 dotenv
 chess
+chess.engine
