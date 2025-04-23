@@ -112,6 +112,29 @@ def sign_up_page(db: Database, userid: str, name: str, username: str, country: s
             return jsonify({"message": "User creation failed"}), 400
     except Exception as e:
         return jsonify({"error": f"Error signing up: {e}"}), 500
+    
+def add_friends(db: Database, userid: str, friendid: str) -> Tuple[Dict[str, Any], int]:
+    try:
+        user = db.child("users").child(userid).get().val()
+        friend = db.child("users").child(friendid).get().val()
+
+        if not user:
+            return jsonify({"error": "User not found"}), 400
+        if not friend: 
+            return jsonify({"error": "Friend not found"}), 400
+        
+        friendlist = db.child("users").child(userid).child("friends").get().val() or {}
+
+        if friendid in friendlist:
+            return f"Already friends with: {friend['username']}"
+        
+        db.child("users").child(userid).child("friends").update({friendid: True})
+        db.child("users").child(friendid).child("friends").update({userid: True})
+
+        return jsonify({"message": f"Friend added successfully: {friend['username']}"}), 200
+    
+    except Exception as e:
+        return jsonify({"error": f"Error addding friend: {e}"}), 500
 
 def get_fen(fen: str, moves: list, move: int) -> str:
    """
