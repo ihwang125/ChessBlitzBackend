@@ -178,6 +178,16 @@ def query():
    else:
        return jsonify({"error": "Stockfish API request failed."}), 500
 
+@app.route("/add-friend", methods=["POST"])
+def add_friend():
+    package = request.json
+    userId = package.get("userId")
+    friendId = package.get("friendId")
+
+    response = add_friends(db, userId, friendId)
+    return response
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
